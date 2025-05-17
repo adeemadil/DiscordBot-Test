@@ -1,2 +1,29 @@
+# Node modules
+node_modules/
+
+# Environment variables
 .env
-node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional: Replit or Codespaces specific
+.replit
+*.code-workspace

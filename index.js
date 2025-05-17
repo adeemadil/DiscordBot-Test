@@ -1,34 +1,40 @@
-const { Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
+const { Client } = require('discord.js-selfbot-v13');
+const axios = require('axios');
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
-});
+const client = new Client();
+const DISCORD_USER_TOKEN = process.env.DISCORD_USER_TOKEN;
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const allowedChannelIds = process.env.ALLOWED_CHANNEL_IDS
+  ? process.env.ALLOWED_CHANNEL_IDS.split(',').map(id => id.trim())
+  : [];
 
-// Map source channel IDs to destination channel IDs
-const channelMap = {
-  'SOURCE_CHANNEL_ID_1': 'TARGET_CHANNEL_ID_1',
-  'SOURCE_CHANNEL_ID_2': 'TARGET_CHANNEL_ID_2',
-};
-
-client.once('ready', () => {
-  console.log(`Bot is ready: ${client.user.tag}`);
+client.on('ready', () => {
+  console.log(`✅ Logged in as ${client.user.username}`);
 });
 
 client.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
+  if (message.author.bot || (allowedChannelIds.length && !allowedChannelIds.includes(message.channel.id))) return;
 
-  const targetChannelId = channelMap[message.channel.id];
-  if (targetChannelId) {
-    const targetChannel = await client.channels.fetch(targetChannelId);
-    if (targetChannel && targetChannel.isTextBased()) {
-      targetChannel.send(`**${message.author.username}**: ${message.content}`);
-    }
+  const timestampUnix = Math.floor(new Date(message.createdAt).getTime() / 1000);
+
+  const discordPayload = {
+    username: "📨 Message Relay",
+    embeds: [{
+      title: `Message from #${message.channel.name}`,
+      description: message.content || "[No text]",
+      author: { name: message.author.username },
+      color: 3447003,
+      footer: { text: `⏰ Time: <t:${timestampUnix}:R>` }
+    }]
+  };
+
+  try {
+    await axios.post(DISCORD_WEBHOOK_URL, discordPayload);
+    console.log(`📤 Sent: ${message.content}`);
+  } catch (error) {
+    console.error('❌ Error:', error.message);
   }
 });
 
-client.login(process.env.BOT_TOKEN);
+client.login(DISCORD_USER_TOKEN);
