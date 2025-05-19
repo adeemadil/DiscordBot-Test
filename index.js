@@ -11,7 +11,7 @@ const allowedChannelIds = process.env.ALLOWED_CHANNEL_IDS
   : [];
 
 client.on('ready', () => {
-  console.log(✅ Logged in as ${client.user.username});
+  console.log(`✅ Logged in as ${client.user.username}`);
 });
 
 client.on('messageCreate', async (message) => {
@@ -40,25 +40,25 @@ client.on('messageCreate', async (message) => {
     }
 
     // Include attachments
-    const attachmentLinks = message.attachments.map(att => 📎 [Attachment](${att.url})).join('\n');
+    const attachmentLinks = message.attachments.map(att => `📎 [Attachment](${att.url})`).join('\n');
 
     const discordPayload = {
       username: "📤 Message Forwarder",
       embeds: [
         {
-          title: 💬 New Message from ${serverName},
-          description: 📨 **Message by:** ${message.author.username}\n +
-                       🕒 **Time:** <t:${Math.floor(message.createdTimestamp / 1000)}:R>\n\n +
-                       💬 **Content:** ${content}\n\n +
-                       📁 **Channel:** ${channelName} +
-                       (attachmentLinks ? \n\n${attachmentLinks} : ''),
+          title: `💬 New Message from ${serverName}`,
+          description: `📨 **Message by:** ${message.author.username}\n` +
+                       `🕒 **Time:** <t:${Math.floor(message.createdTimestamp / 1000)}:R>\n\n` +
+                       `💬 **Content:** ${content}\n\n` +
+                       `📁 **Channel:** ${channelName}` +
+                       (attachmentLinks ? `\n\n${attachmentLinks}` : ''),
           color: 3447003,
         }
       ]
     };
 
     await axios.post(DISCORD_WEBHOOK_URL, discordPayload);
-    console.log(✅ Forwarded message from #${channelName});
+    console.log(`✅ Forwarded message from #${channelName}`);
   } catch (err) {
     console.error('❌ Error forwarding message:', err.message);
   }
