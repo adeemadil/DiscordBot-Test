@@ -1,7 +1,3 @@
-Sure! Here's a `README.md` for your **Discord Message Forwarder Selfbot** GitHub repository:
-
----
-
 ````markdown
 # 📤 Discord Message Forwarder (Selfbot)
 
